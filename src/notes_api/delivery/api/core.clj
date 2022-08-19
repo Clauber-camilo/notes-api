@@ -15,20 +15,8 @@
   [_]
   (ring-resp/response "Hello World!"))
 
-;; Tabular routes
+; Routes definitions
 (def routes #{["/" :get (conj common-interceptors `home-page)]
               ["/about" :get (conj common-interceptors `about-page)]
               ["/test" :post (conj common-interceptors `test-handler) :route-name :test-page]})
-
-; ; Map-based routes
-; (def routes `{"/" {:interceptors common-interceptors
-;                    :get home-page
-;                    "/about" {:get about-page}}})
-
-;; Terse/Vector-based routes
-;(def routes
-;  `[[["/" {:get home-page}
-;      ^:interceptors [(body-params/body-params) http/html-body]
-;      ["/about" {:get about-page}]]]])
-
 
