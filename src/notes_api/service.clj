@@ -2,7 +2,9 @@
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [io.pedestal.http.body-params :as body-params]
-            [ring.util.response :as ring-resp]))
+            [io.pedestal.log :as log]
+            [ring.util.response :as ring-resp]
+            [notes-api.handlers :as handlers]))
 
 (defn about-page
   [request]
@@ -14,11 +16,6 @@
   [request]
   (ring-resp/response "Hello World!"))
 
-(defn test-route
-  [{:keys [json-params]}]
-  (ring-resp/response (str "Hello " (:name json-params) " =D")))
-
-
 ;; Defines "/" and "/about" routes with their associated :get handlers.
 ;; The interceptors defined after the verb map (e.g., {:get home-page}
 ;; apply to / and its children (/about).
@@ -27,7 +24,7 @@
 ;; Tabular routes
 (def routes #{["/" :get (conj common-interceptors `home-page)]
               ["/about" :get (conj common-interceptors `about-page)]
-              ["/test" :post (conj common-interceptors `test-route) :route-name :test-page]})
+              ["/test" :post (conj common-interceptors `handlers/test-handler) :route-name :test-page]})
 
 ;; Map-based routes
 ;(def routes `{"/" {:interceptors [(body-params/body-params) http/html-body]
@@ -67,6 +64,7 @@
               ;;                                                          :script-src "'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:"
               ;;                                                          :frame-ancestors "'none'"}}
 
+              ::http/host "0.0.0.0"
               ;; Root for resource interceptor that is available by default.
               ::http/resource-path "/public"
 
@@ -86,3 +84,4 @@
                                         ;; via the `:io.pedestal.http.jetty/http-configuration` container option.
                                         ;:io.pedestal.http.jetty/http-configuration (org.eclipse.jetty.server.HttpConfiguration.)
                                         }})
+
