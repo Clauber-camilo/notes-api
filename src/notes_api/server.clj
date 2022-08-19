@@ -3,7 +3,7 @@
   (:require
    [io.pedestal.http :as server]
    [io.pedestal.http.route :as route]
-   [notes-api.delivery.api.core :as api-core]
+   [notes-api.delivery.api.core :refer [routes]]
    [notes-api.service :as service]))
 
 ;; This is an adapted service map, that can be started and stopped
@@ -20,7 +20,7 @@
               ::server/join? false
               ;; Routes can be a function that resolve routes,
               ;;  we can use this to set the routes to be reloadable
-              ::server/routes #(route/expand-routes (deref #'api-core/routes))
+              ::server/routes #(route/expand-routes (deref #'routes))
               ;; all origins are allowed in dev mode
               ::server/allowed-origins {:creds true :allowed-origins (constantly true)}
               ;; Content Security Policy (CSP) is mostly turned off in dev mode
