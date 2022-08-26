@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [io.pedestal/pedestal.service "0.5.10"]
-
+                 [metosin/malli "0.8.9"]
                  ;; Remove this line and uncomment one of the next lines to
                  ;; use Immutant or Tomcat instead of Jetty:
                  [io.pedestal/pedestal.jetty "0.5.10"]
@@ -21,6 +21,7 @@
   ;; If you use HTTP/2 or ALPN, use the java-agent to pull in the correct alpn-boot dependency
   ;:java-agents [[org.mortbay.jetty.alpn/jetty-alpn-agent "2.0.5"]]
   :profiles {:dev {:aliases {"run-dev" ["trampoline" "run" "-m" "notes-api.server/run-dev"]}
+                   :plugins [[nrepl/lein-nrepl "0.3.2"]]
                    :dependencies [[io.pedestal/pedestal.service-tools "0.5.10"]]}
              :uberjar {:aot [notes-api.server]}}
   :main ^{:skip-aot true} notes-api.server)
