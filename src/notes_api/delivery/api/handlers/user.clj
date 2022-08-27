@@ -26,44 +26,47 @@
        [:lat double?]
        [:long double?]]]]]])
 
-(comment
-  ;;validate data using a schema
-  (m/validate user-schema {:name "Kaue Matos"
-                           :password "1234567!89"
-                           :email "somemail@fubanga.com"})
+; (comment
+;   ;;validate data using a schema
+;   (m/validate user-schema {:name "Kaue Matos"
+;                            :password "1234567!89"
+;                            :email "somemail@fubanga.com"})
+;
+;   ;;define a validator function for a fixed schema
+;   ;;more time-efficient
+;   (def valid-user? (m/validator user-schema))
+;   (valid-user? {:name "Kaue Matos"
+;                 :password "12345678@9"
+;                 :email "somemail@fubanga.com"})
+;
+;   ;;Explain what's wrong
+;   (def error-data
+;     (m/explain user-schema
+;                {:name "Kaue Matos"
+;                 :password "burundanga"
+;                 :email "paranaue.com"
+;                 :jabiraca 72
+;                 :additional-info {:location {:lat 22
+;                                              :milambe true
+;                                              :long -4.255}}}))
+;
+;   ;;Explain error in human readable format
+;   (me/humanize error-data))
 
-  ;;define a validator function for a fixed schema
-  ;;more time-efficient
-  (def valid-user? (m/validator user-schema))
-  (valid-user? {:name "Kaue Matos"
-                :password "12345678@9"
-                :email "somemail@fubanga.com"})
-
-  ;;Explain what's wrong
-  (def error-data
-    (m/explain user-schema
-               {:name "Kaue Matos"
-                :password "burundanga"
-                :email "paranaue.com"
-                :jabiraca 72
-                :additional-info {:location {:lat 22
-                                             :milambe true
-                                             :long -4.255}}}))
-
-  ;;Explain error in human readable format
-  (me/humanize error-data))
+(def valid-user? (m/validator user-schema))
 
 (defn humanize-error [user]
   (let [error-data (m/explain user-schema user)]
     (me/humanize error-data)))
 
-(humanize-error {:name "Xablau "})
+(comment (def xuser {:name "Xablau"}))
 
-(defn create-user-handler [{{:keys [user]} :json-params :as request}]
-  (def x request)
+(defn create-user-handler
+  "[POST] create-user"
+  [{{:keys [user]} :json-params}]
   (if (valid-user? user)
-    (log/info :create-user "foi"
-              (ring-resp/bad-request (humanize-error user)))
-    (log/error :create-user "to bad")))
+    (log/info :create-user "foi")
+    (do
+      (log/error :create-user "to bad")
+      (ring-resp/bad-request (humanize-error user)))))
 
-(prn x)
