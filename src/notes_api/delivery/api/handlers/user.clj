@@ -1,17 +1,16 @@
 (ns notes-api.delivery.api.handlers.user
   (:require
-    [clojure.string :as s]
-    [clojure.string]
-    [io.pedestal.log :as log]
-    [malli.core :as m]
-    [malli.error :as me]))
+   [clojure.string :as s]
+   [io.pedestal.log :as log]
+   [malli.core :as m]
+   [malli.error :as me]
+   [ring.util.response :as ring-resp]))
 
 (defn not-blank [s] (not (s/blank? s)))
 
 (def name-pattern #"^.{8,}$")
 (def password-pattern #"(?=^.{10,}$)(?=.*(\@|\!))")
 (def email-pattern #"^[a-z0-9]+@.[a-z]")
-
 
 (def user-schema
   [:map {:closed true}
@@ -30,7 +29,7 @@
 (comment
   ;;validate data using a schema
   (m/validate user-schema {:name "Kaue Matos"
-                           :password "12345678@9"
+                           :password "1234567!89"
                            :email "somemail@fubanga.com"})
 
   ;;define a validator function for a fixed schema
@@ -54,20 +53,17 @@
   ;;Explain error in human readable format
   (me/humanize error-data))
 
+(defn humanize-error [user]
+  (let [error-data (m/explain user-schema user)]
+    (me/humanize error-data)))
 
-(defn valid-user? [{:keys [name
-                           password
-                           email]}]
-  (boolean
-    (and
-      (not-blank name)
-      (not-blank password)
-      (not-blank email))))
+(humanize-error {:name "Xablau "})
 
 (defn create-user-handler [{{:keys [user]} :json-params :as request}]
   (def x request)
   (if (valid-user? user)
-    (log/info :create-user "foi")
+    (log/info :create-user "foi"
+              (ring-resp/bad-request (humanize-error user)))
     (log/error :create-user "to bad")))
 
 (prn x)
