@@ -49,7 +49,8 @@
   "[POST] create-user"
   [{{:keys [user]} :json-params}]
   (if (valid-user? user)
-    (user-usecase/create-user user)
+    (-> (user-usecase/create-user user)
+        (ring-resp/response))
     (do
       (log/error :create-user "This isn't a valid user")
       (ring-resp/bad-request (write-error-json user)))))
