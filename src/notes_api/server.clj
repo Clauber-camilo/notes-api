@@ -2,6 +2,7 @@
   (:gen-class) ; for -main method in uberjar
   (:require
    [io.pedestal.http :as server]
+   [clojure.string :as str]
    [io.pedestal.http.route :as route]
    [notes-api.delivery.api.core :refer [routes]]
    [notes-api.service :as service]))
