@@ -4,6 +4,7 @@
    [clojure.data.json :as json]
    [malli.core :as m]
    [malli.error :as me]
+   [notes-api.core.use-case.user.create-user :as user-usecase]
    [notes-api.schemas.user :refer [user-schema]]
    [ring.util.response :as ring-resp]))
 
@@ -48,7 +49,7 @@
   "[POST] create-user"
   [{{:keys [user]} :json-params}]
   (if (valid-user? user)
-    (log/info :create-user "foi")
+    (user-usecase/create-user user)
     (do
       (log/error :create-user "This isn't a valid user")
       (ring-resp/bad-request (write-error-json user)))))

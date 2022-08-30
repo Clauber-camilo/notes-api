@@ -1,16 +1,24 @@
-(ns notes-api.core.entity.user (:require [notes_api.core.entity.core :as entity]))
+(ns notes-api.core.entity.user
+  (:require
+   [notes_api.core.entity.main :as entity]))
 
 (defn- date
   "Creates a date in a target agnostic way"
   []
   java.util.Date.)
 
+(defn create-user-obj [{:keys [name email password]}]
+  {:id entity/make-uuid
+   :name name
+   :email email
+   :password password
+   :created-at (date)
+   :updated-at (date)
+   :deleted-at nil})
+
 (defn create-user
   "Create a new User"
-  ([id name surname password] {::entity/id id
-                               ::name name
-                               ::surname surname
-                               ::password password
-                               ::created-at (date)
-                               ::updated-at (date)})
-  ([name surname password] (create-user (entity/make-uuid) name surname password)))
+  [user]
+  (->
+   (create-user-obj user)
+   (prn)))
