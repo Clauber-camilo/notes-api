@@ -1,15 +1,18 @@
-(ns notes-api.core.entity.user
+(ns notes-api.components.user.entity
   (:require
-   [notes-api.core.entity.entity-base :as entity]
    [clojure.data.json :as json]))
+
+(defn- make-uuid-str
+  "Creates a new UUID and return a string" []
+  (str (java.util.UUID/randomUUID)))
 
 (defn- date
   "Creates a date in a target agnostic way"
   []
   (java.util.Date.))
 
-(defn create-user-obj [{:keys [name email password]}]
-  {:id (entity/make-uuid-str)
+(defn generate-user-map [{:keys [name email password]}]
+  {:id (make-uuid-str)
    :name name
    :email email
    :password password
@@ -17,11 +20,11 @@
    :updated-at (date)
    :deleted-at nil})
 
-(defn create-user
+(defn save-user
   "Create a new User"
   [user]
   (->
-   (create-user-obj user)
+   (generate-user-map user)
    (dissoc :password)
    (json/write-str)))
 
@@ -29,4 +32,5 @@
   (def xuser {:name "Clauber"
               :password "34341234234$34324"
               :email "clauber@test.com"})
-  (create-user xuser))
+  (save-user xuser))
+
