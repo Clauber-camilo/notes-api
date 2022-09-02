@@ -1,4 +1,4 @@
-(ns notes-api.delivery.api.interceptors.core
+(ns notes-api.http.interceptors
   (:require
    [io.pedestal.http :as http]
    [io.pedestal.http.body-params :as body-params]))
