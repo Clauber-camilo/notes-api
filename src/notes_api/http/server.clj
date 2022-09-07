@@ -1,11 +1,11 @@
 (ns notes-api.http.server
   (:gen-class)                                              ; for -main method in uberjar
   (:require
-    [io.pedestal.http :as server]
-    [io.pedestal.http.route :as route]
-    [notes-api.http.service :as service]
-    [notes-api.http.routes :refer [routes]]
-    [cheshire.core :as json]))
+   [io.pedestal.http :as server]
+   [io.pedestal.http.route :as route]
+   [notes-api.http.service :as service]
+   [notes-api.http.routes :refer [routes]]
+   [cheshire.core :as json]))
 
 ;; This is an adapted service map, that can be started and stopped
 ;; From the REPL you can call server/start and server/stop on this service
@@ -42,7 +42,7 @@
   (def f (future (server/start runnable-service)))
   (require `clj-http.client)
   (clj-http.client/post
-    "http://localhost:8080/user"
-    {:body (json/generate-string
-             {:user {:name "Kaue"
-                     :surname "Schultz"}})}))
+   "http://localhost:8080/user"
+   {:form-params
+    {:user {:name "Kaue"}}
+    :content-type :json}))
