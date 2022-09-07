@@ -1,7 +1,7 @@
-(ns notes-api.service
+(ns notes-api.http.service
   (:require
    [io.pedestal.http :as http]
-   [notes-api.delivery.api.core :refer [routes]]))
+   [notes-api.http.routes :refer [routes]]))
 
 ;; Consumed by notes-api.server/create-server
 ;; See http/default-interceptors for additional options you can configure

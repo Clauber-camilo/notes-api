@@ -1,10 +1,11 @@
-(ns notes-api.server
-  (:gen-class) ; for -main method in uberjar
+(ns notes-api.http.server
+  (:gen-class)                                              ; for -main method in uberjar
   (:require
-   [io.pedestal.http :as server]
-   [io.pedestal.http.route :as route]
-   [notes-api.delivery.api.core :refer [routes]]
-   [notes-api.service :as service]))
+    [io.pedestal.http :as server]
+    [io.pedestal.http.route :as route]
+    [notes-api.http.service :as service]
+    [notes-api.http.routes :refer [routes]]
+    [cheshire.core :as json]))
 
 ;; This is an adapted service map, that can be started and stopped
 ;; From the REPL you can call server/start and server/stop on this service
@@ -14,7 +15,7 @@
   "The entry-point for 'lein run-dev'"
   [& args]
   (println "\nCreating your [DEV] server...")
-  (-> service/service ;; start with production configuration
+  (-> service/service                                       ;; start with production configuration
       (merge {:env :dev
               ;; do not block thread that starts web server
               ::server/join? false
@@ -37,21 +38,11 @@
   (println "\nCreating your server...")
   (server/start runnable-service))
 
-;; If you package the service up as a WAR,
-;; some form of the following function sections is required (for io.pedestal.servlet.ClojureVarServlet).
-
-;;(defonce servlet  (atom nil))
-;;
-;;(defn servlet-init
-;;  [_ config]
-;;  ;; Initialize your app here.
-;;  (reset! servlet  (server/servlet-init service/service nil)))
-;;
-;;(defn servlet-service
-;;  [_ request response]
-;;  (server/servlet-service @servlet request response))
-;;
-;;(defn servlet-destroy
-;;  [_]
-;;  (server/servlet-destroy @servlet)
-;;  (reset! servlet nil))
+(comment
+  (def f (future (server/start runnable-service)))
+  (require `clj-http.client)
+  (clj-http.client/post
+    "http://localhost:8080/user"
+    {:body (json/generate-string
+             {:user {:name "Kaue"
+                     :surname "Schultz"}})}))
