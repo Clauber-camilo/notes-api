@@ -7,6 +7,8 @@
                  [io.pedestal/pedestal.service "0.5.10"]
                  [metosin/malli "0.8.9"]
                  [clj-http "3.12.3"]
+                 [com.github.seancorfield/next.jdbc "1.3.828"]
+                 [org.postgresql/postgresql "42.3.7"]
                  ;; Remove this line and uncomment one of the next lines to
                  ;; use Immutant or Tomcat instead of Jetty:
                  [io.pedestal/pedestal.jetty "0.5.10"]

@@ -13,10 +13,11 @@
 
 (defn run-dev
   "The entry-point for 'lein run-dev'"
-  [& args]
+  [& _]
   (println "\nCreating your [DEV] server...")
   (-> service/service                                       ;; start with production configuration
       (merge {:env :dev
+              ::atm-con "DB"
               ;; do not block thread that starts web server
               ::server/join? false
               ;; Routes can be a function that resolve routes,
@@ -34,7 +35,7 @@
 
 (defn -main
   "The entry-point for 'lein run'"
-  [& args]
+  [& _]
   (println "\nCreating your server...")
   (server/start runnable-service))
 
