@@ -15,9 +15,9 @@
 (comment
   (with-open [conn (jdbc/get-connection db-config)]
     (jdbc/execute! conn ["
-        create table address (
+        create table IF NOT EXISTS users (
           id serial primary key,
           name varchar(32),
           email varchar(255)
-        )"])))
+        );"])))
 
