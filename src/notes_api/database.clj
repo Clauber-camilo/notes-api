@@ -15,9 +15,13 @@
 (comment
   (with-open [conn (jdbc/get-connection db-config)]
     (jdbc/execute! conn ["
-        create table IF NOT EXISTS users (
+        DROP TABLE IF EXISTS users;
+        CREATE TABLE IF NOT EXISTS users (
           id serial primary key,
           name varchar(32),
-          email varchar(255)
+          email varchar(255),
+          password varchar(255),
+          created_at timestamp with time zone,
+          updated_at timestamp with time zone
         );"])))
 
