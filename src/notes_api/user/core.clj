@@ -23,12 +23,6 @@
    [:email email-pattern]])
 
 
-(defn- date
-  "Creates a date in a target agnostic way"
-  []
-  (sql/raw ["now()"]))
-
-
 (comment
   ;; turn instrumentation on
   (require `[malli.instrument :as mi])
@@ -40,8 +34,8 @@
   "Create a new User"
   [id name email password db]
   (jdbc/execute! db (sql/format {:insert-into :users
-                                 :columns [:id :name :email :password :created-at :updated-at]
-                                 :values [[(or id (UUID/randomUUID)) name email password (date) (date)]]})))
+                                 :columns [:id :name :email :password]
+                                 :values [[(or id (UUID/randomUUID)) name email password]]})))
 
 
 ;; [{:id (or id (UUID/randomUUID))
