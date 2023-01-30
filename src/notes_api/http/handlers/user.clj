@@ -27,11 +27,8 @@
 (defn create-user
   "[POST] create-user"
   [{:keys [json-params system-context]}]
-  ;; [{{:keys [user]} :json-params}]
-  (log/info :user (:user json-params)
-            :db-test (:db system-context))
   (if (valid-user? (:user json-params))
-    (-> (user/create-user (:user json-params))
+    (-> (user/create-user (assoc (:user json-params) :db system-context))
         (json/generate-string)
         (ring-resp/response))
     (do

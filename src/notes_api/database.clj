@@ -17,9 +17,9 @@
     (jdbc/execute! conn ["
         DROP TABLE IF EXISTS users;
         CREATE TABLE IF NOT EXISTS users (
-          id serial primary key,
+          id uuid primary key,
           name varchar(32),
-          email varchar(255),
+          email varchar(255) unique,
           password varchar(255),
           created_at timestamp with time zone,
           updated_at timestamp with time zone

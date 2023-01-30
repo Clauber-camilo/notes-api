@@ -1,9 +1,11 @@
 (ns notes-api.user.core
   (:require
-    [malli.core :as m])
+    [honeysql.core :as sql]
+    [honeysql.helpers :refer :all :as helpers]
+    [malli.core :as m]
+    [next.jdbc :as jdbc])
   (:import
     (java.util
-      Date
       UUID)))
 
 
@@ -24,7 +26,7 @@
 (defn- date
   "Creates a date in a target agnostic way"
   []
-  (Date.))
+  (sql/raw ["now()"]))
 
 
 (comment
@@ -36,13 +38,18 @@
 
 (defn create-user
   "Create a new User"
-  [id name surname password]
-  [{:id (or id (UUID/randomUUID))
-    :name name
-    :surname surname
-    :password password
-    :created-at (date)
-    :updated-at (date)}])
+  [id name email password db]
+  (jdbc/execute! db (sql/format {:insert-into :users
+                                 :columns [:id :name :email :password :created-at :updated-at]
+                                 :values [[(or id (UUID/randomUUID)) name email password (date) (date)]]})))
+
+
+;; [{:id (or id (UUID/randomUUID))
+;;   :name name
+;;   :email email
+;;   :password password
+;;   :created-at (date)
+;;   :updated-at (date)}])
 
 
 (m/=> create-user

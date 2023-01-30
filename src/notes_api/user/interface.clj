@@ -12,5 +12,5 @@
 ;; Using maps as parameters make it easier to evolve
 ;; likely to change interfaces
 (defn create-user
-  [{:keys [id name surname password]}]
-  (user/create-user id name surname password))
+  [{:keys [id name email password db]}]
+  (user/create-user id name email password db))
