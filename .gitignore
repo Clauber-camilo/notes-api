@@ -1,5 +1,5 @@
 # Project related
-
+src/notes_api/http/client_requests.clj
 # Java related
 pom.xml
 pom.xml.asc
@@ -39,3 +39,4 @@ build/
 .calva/
 .clj-kondo/
 .lsp
+

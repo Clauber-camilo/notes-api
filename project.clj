@@ -7,6 +7,8 @@
                  [io.pedestal/pedestal.service "0.5.10"]
                  [metosin/malli "0.8.9"]
                  [clj-http "3.12.3"]
+                 [com.github.seancorfield/next.jdbc "1.3.828"]
+                 [org.postgresql/postgresql "42.3.7"]
                  ;; Remove this line and uncomment one of the next lines to
                  ;; use Immutant or Tomcat instead of Jetty:
                  [io.pedestal/pedestal.jetty "0.5.10"]
@@ -16,11 +18,12 @@
                  [ch.qos.logback/logback-classic "1.2.3" :exclusions [org.slf4j/slf4j-api]]
                  [org.slf4j/jul-to-slf4j "1.7.26"]
                  [org.slf4j/jcl-over-slf4j "1.7.26"]
-                 [org.slf4j/log4j-over-slf4j "1.7.26"]]
+                 [org.slf4j/log4j-over-slf4j "1.7.26"]
+                 [com.github.seancorfield/honeysql "2.4.969"]]
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]
   ;; If you use HTTP/2 or ALPN, use the java-agent to pull in the correct alpn-boot dependency
-  ;:java-agents [[org.mortbay.jetty.alpn/jetty-alpn-agent "2.0.5"]]
+  ;; :java-agents [[org.mortbay.jetty.alpn/jetty-alpn-agent "2.0.5"]]
   :profiles {:dev {:aliases {"run-dev" ["trampoline" "run" "-m" "notes-api.http.server/run-dev"]}
                    :dependencies [[io.pedestal/pedestal.service-tools "0.5.10"]]}
              :uberjar {:aot [notes-api.http.server]}}

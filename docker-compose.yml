@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  notes-db:
+    image: postgres:14.5-alpine
+    environment:
+      - POSTGRES_USER=notes-db
+      - POSTGRES_PASSWORD=notes-db
+      - POSTGRES_DB=notes-db
+    ports:
+      - '5432:5432'
+    volumes: 
+      - notes-db:/var/lib/postgresql/data
+volumes:
+  notes-db:
+    driver: local
+
