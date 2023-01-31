@@ -1,0 +1,6 @@
+{:database {:dbtype "postgresql"
+            :host #or [#env "DB_HOST" "localhost"]
+            :dbname #or [#env "DB_NAME" "notes-db"]
+            :user #or [#env "DB_USER" "notes-db"]
+            :password #or [#env "DB_PASS" "notes-db"]
+            :port #or [#env "DB_PORT" 5432]}}

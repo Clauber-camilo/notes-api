@@ -17,15 +17,6 @@ FIXME
 To configure logging see config/logback.xml. By default, the app logs to stdout and logs/.
 To learn more about configuring Logback, read its [documentation](http://logback.qos.ch/documentation.html).
 
-### Populate the profiles environment
-The project uses the [environ](https://github.com/weavejester/environ) to set an environment variables and access this thought the code. 
-
-To start you can run 
-
-```
-cp example.profiles.clj profiles.clj
-```
-
 To have the basic of the dev environment configured.
 
 ### Docker 

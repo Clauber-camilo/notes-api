@@ -1,11 +1,12 @@
 (ns notes-api.database
   (:require
-    [environ.core :refer [env]]
+    [aero.core :refer [read-config]]
+    [clojure.java.io :as io]
     [next.jdbc :as jdbc]))
 
 
 (def db-environment
-  (read-string (env :database)))
+  (:database (read-config (io/resource "config.edn"))))
 
 
 (def db-config

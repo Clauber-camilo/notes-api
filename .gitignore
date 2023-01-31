@@ -16,7 +16,6 @@ target/
 repl-port
 .nrepl-port
 .repl
-profiles.clj
 
 # Temp Files
 *.orig
