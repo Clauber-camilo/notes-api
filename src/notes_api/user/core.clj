@@ -1,7 +1,6 @@
 (ns notes-api.user.core
   (:require
-    [honeysql.core :as sql]
-    [honeysql.helpers :refer :all :as helpers]
+    [honey.sql :as sql]
     [malli.core :as m]
     [next.jdbc :as jdbc])
   (:import
