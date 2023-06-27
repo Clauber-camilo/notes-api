@@ -1,8 +1,7 @@
 (ns notes-api.database
-  (:require
-    [aero.core :refer [read-config]]
-    [clojure.java.io :as io]
-    [next.jdbc :as jdbc]))
+  (:require [aero.core :refer [read-config]]
+            [clojure.java.io :as io]
+            [next.jdbc :as jdbc]))
 
 
 (def db-environment
@@ -14,7 +13,7 @@
    :dbname (:dbname db-environment),
    :user (:user db-environment),
    :password (:password db-environment),
-   :host (:host db-environment) ,
+   :host (:host db-environment),
    :port (:port db-environment)})
 
 
