@@ -1,7 +1,8 @@
 (ns notes-api.http.service
-  (:require
-    [io.pedestal.http :as http]
-    [notes-api.http.routes :refer [routes]]))
+  (:require [io.pedestal.http :as http]
+            [notes-api.database :as database]
+            [notes-api.http.routes :refer [routes]]))
+
 
 
 ;; Consumed by notes-api.server/create-server
@@ -13,7 +14,7 @@
    ;; dev-mode. If you do, many other keys for configuring
    ;; default interceptors will be ignored.
    ;; ::http/interceptors []
-   ::http/routes routes
+   ::http/routes (routes (database/db))
 
    ;; Uncomment next line to enable CORS support, add
    ;; string(s) specifying scheme, host and port for

@@ -17,6 +17,23 @@ FIXME
 To configure logging see config/logback.xml. By default, the app logs to stdout and logs/.
 To learn more about configuring Logback, read its [documentation](http://logback.qos.ch/documentation.html).
 
+To have the basic of the dev environment configured.
+
+### Docker 
+The project contains a basic docker compose file to mount a database.
+Run the command below to create the postgres instance.
+
+```
+docker-compose up -d
+```
+
+### Runnning Migrations
+With the database already configured, we now can run the migrations. 
+To be able to run the migration, open the file `src/migrations.clj` 
+that file contains the lib [migratus](https://github.com/yogthos/migratus) 
+where the db config is called, and we can evaluate the form `(migratus/migrate config)` 
+to run the pending migrations.
+
 
 ## Developing your service
 

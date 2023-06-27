@@ -19,12 +19,18 @@
                  [org.slf4j/jul-to-slf4j "1.7.26"]
                  [org.slf4j/jcl-over-slf4j "1.7.26"]
                  [org.slf4j/log4j-over-slf4j "1.7.26"]
-                 [com.github.seancorfield/honeysql "2.4.969"]]
+                 [migratus "1.4.9"]
+                 [com.github.seancorfield/honeysql "2.4.969"]
+                 [aero "1.1.6"]]
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]
+  :source-paths ["src"]
   ;; If you use HTTP/2 or ALPN, use the java-agent to pull in the correct alpn-boot dependency
   ;; :java-agents [[org.mortbay.jetty.alpn/jetty-alpn-agent "2.0.5"]]
-  :profiles {:dev {:aliases {"run-dev" ["trampoline" "run" "-m" "notes-api.http.server/run-dev"]}
+  :profiles {:dev {:source-paths ["src", "dev"]
+                   :aliases {"run-dev" ["trampoline" "run" "-m" "notes-api.http.server/run-dev"]}
                    :dependencies [[io.pedestal/pedestal.service-tools "0.5.10"]]}
-             :uberjar {:aot [notes-api.http.server]}}
+             :uberjar {:aot [notes-api.http.server]}
+             :prod {:dependencies [[io.pedestal/pedestal.service-tools "0.5.10"]]
+                    :aliases {"run-dev" ["trampoline" "run" "-m" "notes-api.http.server/run-dev"]}}}
   :main ^{:skip-aot true} notes-api.http.server)

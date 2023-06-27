@@ -1,27 +1,22 @@
 (ns notes-api.database
-  (:require
-   [next.jdbc :as jdbc]))
+  (:require [aero.core :refer [read-config]]
+            [clojure.java.io :as io]
+            [next.jdbc :as jdbc]))
+
+
+(def db-environment
+  (:database (read-config (io/resource "config.edn"))))
+
 
 (def db-config
   {:dbtype "postgresql",
-   :dbname "notes-db",
-   :user "notes-db" ,
-   :password "notes-db" ,
-   :host "localhost" ,
-   :port 5432})
+   :dbname (:dbname db-environment),
+   :user (:user db-environment),
+   :password (:password db-environment),
+   :host (:host db-environment),
+   :port (:port db-environment)})
 
-(defn db [] (jdbc/get-datasource db-config))
 
-(comment
-  (with-open [conn (jdbc/get-connection db-config)]
-    (jdbc/execute! conn ["
-        DROP TABLE IF EXISTS users;
-        CREATE TABLE IF NOT EXISTS users (
-          id uuid primary key,
-          name varchar(32),
-          email varchar(255) unique,
-          password varchar(255),
-          created_at timestamp with time zone default NOW(),
-          updated_at timestamp with time zone default NOW()
-        );"])))
-
+(defn db
+  []
+  (jdbc/get-datasource db-config))
