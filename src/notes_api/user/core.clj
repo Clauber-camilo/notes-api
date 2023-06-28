@@ -1,11 +1,17 @@
 (ns notes-api.user.core
-  (:require [crypto.password.bcrypt :as crypto]
-            [honey.sql :as sql]
-            [malli.core :as m]
-            [next.jdbc :as jdbc]
-            [notes-api.utils :refer [email-pattern name-pattern password-pattern]])
-  (:import (java.util
-            UUID)))
+  (:require
+    [honey.sql :as sql]
+    [malli.core :as m]
+    [next.jdbc :as jdbc])
+  (:import
+    (java.util
+      UUID)))
+
+
+(def name-pattern #"^.{8,}$")
+(def password-pattern #"(?=^.{10,}$)(?=.*(\@|\!))")
+(def email-pattern #"^[a-z0-9]+@.[a-z]")
+
 
 (def schema
   [:map {:closed true}
@@ -26,10 +32,18 @@
 (defn create-user
   "Create a new User"
   [id name email password db]
-  (let [hashed-password (crypto/encrypt password)]
-    (jdbc/execute! db (sql/format {:insert-into :users
-                                   :columns [:id :name :email :password]
-                                   :values [[(or id (UUID/randomUUID)) name email hashed-password]]}))))
+  (jdbc/execute! db (sql/format {:insert-into :users
+                                 :columns [:id :name :email :password]
+                                 :values [[(or id (UUID/randomUUID)) name email password]]})))
+
+
+;; [{:id (or id (UUID/randomUUID))
+;;   :name name
+;;   :email email
+;;   :password password
+;;   :created-at (date)
+;;   :updated-at (date)}])
+
 
 (m/=> create-user
       [:=>

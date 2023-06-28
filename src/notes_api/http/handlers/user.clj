@@ -35,4 +35,3 @@
       (log/error :create-user "This isn't a valid user")
       (ring-resp/bad-request
         (json/generate-string {:errors (humanize-error (:user json-params))})))))
-
