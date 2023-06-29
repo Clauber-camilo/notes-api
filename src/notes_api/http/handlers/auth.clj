@@ -14,22 +14,20 @@
    (m/explain auth/schema auth-body)
    (me/humanize)))
 
+(defn authenticate-user
+  "[POST] authenticate-user"
+  [{:keys [json-params system-context]}]
+  (if (valid-auth-body? json-params)
+    (-> (auth/authenticate-user (assoc json-params :db system-context))
+        (#(cond
+            (contains? % :error) {:status 404 :body (json/generate-string %)}
+            (contains? % :success) {:status 200 :body (json/generate-string (:success %))})))
+    (do
+      (log/error :authenticate-user "This isn't a valid body")
+      (ring-resp/bad-request (json/generate-string {:error (humanize-error json-params)})))))
+
 (comment
   (do
     (def xuser {:email "teste@teste.com" :password "1234567890!"})
     (valid-auth-body? xuser)
     (humanize-error xuser)))
-
-(defn authenticate-user
-  "[POST] authenticate-user"
-  [{:keys [json-params system-context]}]
-  (if (valid-auth-body? json-params)
-    (let [response (auth/authenticate-user (assoc json-params :db system-context))]
-      (if (contains? response :error)
-        (do
-          (log/error :authenticate-user "User not found")
-          {:status 404 :body (json/generate-string response)})
-        (ring-resp/response (json/generate-string response))))
-    (do
-      (log/error :authenticate-user "This isn't a valid body")
-      (ring-resp/bad-request (json/generate-string {:errors (humanize-error json-params)})))))

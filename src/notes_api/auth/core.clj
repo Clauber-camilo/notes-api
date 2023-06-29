@@ -1,7 +1,6 @@
 (ns notes-api.auth.core
-  (:require [honey.sql :as sql]
-            [io.pedestal.log :as log]
-            [next.jdbc :as jdbc]
+  (:require [io.pedestal.log :as log]
+            [notes-api.user.core :refer [get-user-by-email]]
             [notes-api.utils :refer [email-pattern password-pattern]]))
 
 (def schema
@@ -14,11 +13,10 @@
 (defn authenticate-user
   "Authenticate user"
   [email password db]
-  (let [user (jdbc/execute! db (sql/format {:select :*
-                                            :from :users
-                                            :where [:= :email email]}))]
+  (let [user (get-user-by-email email db)]
     (log/info :query user)
     (if (= (count user) 0)
       (do (log/error :zica "nao achou")
           {:error "User not found"})
-      (log/info :zica "achou"))))
+      (do (log/info :zica user)
+          {:success user}))))

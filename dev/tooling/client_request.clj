@@ -16,7 +16,7 @@
   (client/post "http://localhost:8080/auth"
                {:content-type :json
                 :form-params
-                {:email "stest@test.com"
+                {:email "test@test.com"
                  :password "123456678910@"}}))
 
 (authenticate-user)
