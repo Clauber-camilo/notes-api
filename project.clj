@@ -22,7 +22,9 @@
                  [migratus "1.4.9"]
                  [com.github.seancorfield/honeysql "2.4.969"]
                  [aero "1.1.6"]
-                 [crypto-password "0.3.0"]]
+                 [clj-time "0.15.2"]
+                 [crypto-password "0.3.0"]
+                 [buddy/buddy-sign "3.5.351"]]
   :min-lein-version "2.0.0"
   :resource-paths ["config", "resources"]
   :source-paths ["src"]

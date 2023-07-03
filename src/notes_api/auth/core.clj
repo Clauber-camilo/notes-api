@@ -1,10 +1,19 @@
 (ns notes-api.auth.core
-  (:require [crypto.password.bcrypt :as crypto]
-            [io.pedestal.log :as log]
+  (:require [aero.core :refer [read-config]]
+            [buddy.sign.jwt :as jwt]
+            [clj-time.core :as time]
+            [clojure.java.io :as io]
+            [crypto.password.bcrypt :as crypto]
+            [honey.sql :as sql]
             [malli.core :as m]
             [malli.error :as me]
+            [next.jdbc :as jdbc]
             [notes-api.user.core :refer [get-user-by-email]]
-            [notes-api.utils :refer [email-pattern password-pattern]]))
+            [notes-api.utils :refer [email-pattern password-pattern]])
+  (:import [java.util UUID]))
+
+(def secret
+  (:secret (read-config (io/resource "config.edn"))))
 
 (def schema
   [:map {:closed true}
@@ -20,6 +29,23 @@
    (m/explain schema auth-body)
    (me/humanize)))
 
+(defn generate-token
+  "Generate a new jwt token"
+  ([data] (generate-token data (time/plus (time/now) (time/minutes 30))))
+  ([data expires]
+   (println (format "data :%s" data))
+   (jwt/sign (assoc data :exp expires) (str secret))))
+
+(defn save-in-token-management
+  "Save a new register in token managment and return a valid token and refresh"
+  [user db]
+  (let [token (generate-token user)
+        refresh (generate-token user (time/plus (time/now) (time/days 30)))]
+    (jdbc/execute! db (sql/format {:insert-into :token_management
+                                   :columns [:id :token :user_id :refresh_token]
+                                   :values [[(UUID/randomUUID) token (:id user) refresh]]}))
+    {:token token :refresh_token refresh}))
+
 (defn authenticate-user
   "Authenticate user"
   [email password db]
@@ -31,19 +57,23 @@
       (= (count user) 0)
       {:error "User not found" :status 404}
 
-      (not (crypto/check password (:users/password user)))
+      (not (crypto/check password (:password user)))
       {:error "Something went wrong" :status 500}
 
       :else
-      {:success {:name (:users/name user)
-                 :email (:users/email user)
-                 :level (:users/level user)
-                 :created_at (:users/created_at user)
-                 :updated_at (:users/updated_at user)}
-       :status 200})))
+      (let [{:keys [token refresh_token]} (save-in-token-management user db)]
+        {:success {:name (:name user)
+                   :email (:email user)
+                   :level (:level user)
+                   :token token
+                   :refresh_token refresh_token
+                   :created_at (:created_at user)
+                   :updated_at (:updated_at user)}
+         :status 200}))))
 
 (comment
   (require '[notes-api.database :refer [db]])
   (authenticate-user "test@test.com" "123456678910@"
                      #_{:clj-kondo/ignore [:unresolved-symbol]}
-                     (db)))
+                     (db))
+  (save-in-token-management {:id (UUID/fromString "fc5c9ca6-34c7-4a18-8fe1-1617a708f040") :name "Jonh Doe"} (db)))

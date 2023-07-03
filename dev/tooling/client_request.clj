@@ -19,4 +19,4 @@
                 {:email "test@test.com"
                  :password "123456678910@"}}))
 
-(authenticate-user)
+(comment (authenticate-user))
