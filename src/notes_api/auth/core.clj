@@ -1,16 +1,19 @@
 (ns notes-api.auth.core
-  (:require [aero.core :refer [read-config]]
-            [buddy.sign.jwt :as jwt]
-            [clj-time.core :as time]
-            [clojure.java.io :as io]
-            [crypto.password.bcrypt :as crypto]
-            [honey.sql :as sql]
-            [malli.core :as m]
-            [malli.error :as me]
-            [next.jdbc :as jdbc]
-            [notes-api.user.core :refer [get-user-by-email]]
-            [notes-api.utils :refer [email-pattern password-pattern]])
-  (:import [java.util UUID]))
+  (:require
+   [aero.core :refer [read-config]]
+   [buddy.sign.jwt :as jwt]
+   [clj-time.coerce :refer [to-sql-time]]
+   [clj-time.core :as time]
+   [clojure.java.io :as io]
+   [crypto.password.bcrypt :as crypto]
+   [honey.sql :as sql]
+   [malli.core :as m]
+   [malli.error :as me]
+   [next.jdbc :as jdbc]
+   [notes-api.user.core :refer [get-user-by-email]]
+   [notes-api.utils :refer [email-pattern password-pattern]])
+  (:import
+   [java.util UUID]))
 
 (def secret
   (:secret (read-config (io/resource "config.edn"))))
@@ -33,17 +36,26 @@
   "Generate a new jwt token"
   ([data] (generate-token data (time/plus (time/now) (time/minutes 30))))
   ([data expires]
-   (println (format "data :%s" data))
    (jwt/sign (assoc data :exp expires) (str secret))))
+
+(defn insert-token-sql
+  [userId token refresh]
+  (-> {:insert-into :token_management
+       :columns [:id :user_id :token :refresh_token]
+       :values [[(UUID/randomUUID) userId token refresh]]
+       :on-conflict :user_id
+       :do-update-set {:id :excluded.id
+                       :token :excluded.token
+                       :refresh_token :excluded.refresh_token
+                       :updated_at (to-sql-time (time/now))}}
+      (sql/format)))
 
 (defn save-in-token-management
   "Save a new register in token managment and return a valid token and refresh"
   [user db]
   (let [token (generate-token user)
         refresh (generate-token user (time/plus (time/now) (time/days 30)))]
-    (jdbc/execute! db (sql/format {:insert-into :token_management
-                                   :columns [:id :token :user_id :refresh_token]
-                                   :values [[(UUID/randomUUID) token (:id user) refresh]]}))
+    (jdbc/execute! db (insert-token-sql (:id user) token refresh))
     {:token token :refresh_token refresh}))
 
 (defn authenticate-user
