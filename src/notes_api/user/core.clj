@@ -1,17 +1,10 @@
 (ns notes-api.user.core
-  (:require
-    [honey.sql :as sql]
-    [malli.core :as m]
-    [next.jdbc :as jdbc])
-  (:import
-    (java.util
-      UUID)))
-
-
-(def name-pattern #"^.{8,}$")
-(def password-pattern #"(?=^.{10,}$)(?=.*(\@|\!))")
-(def email-pattern #"^[a-z0-9]+@.[a-z]")
-
+  (:require [crypto.password.bcrypt :as crypto]
+            [honey.sql :as sql]
+            [next.jdbc :as jdbc]
+            [notes-api.utils :refer [email-pattern name-pattern password-pattern]])
+  (:import (java.util
+            UUID)))
 
 (def schema
   [:map {:closed true}
@@ -21,31 +14,17 @@
      password-pattern]]
    [:email email-pattern]])
 
-
-(comment
-  ;; turn instrumentation on
-  (require `[malli.instrument :as mi])
-  #_{:clj-kondo/ignore [:unresolved-namespace]}
-  (mi/instrument!))
-
-
 (defn create-user
   "Create a new User"
   [id name email password db]
-  (jdbc/execute! db (sql/format {:insert-into :users
-                                 :columns [:id :name :email :password]
-                                 :values [[(or id (UUID/randomUUID)) name email password]]})))
+  (let [hashed-password (crypto/encrypt password)]
+    (jdbc/execute! db (sql/format {:insert-into :users
+                                   :columns [:id :name :email :password]
+                                   :values [[(or id (UUID/randomUUID)) name email hashed-password]]}))))
 
-
-;; [{:id (or id (UUID/randomUUID))
-;;   :name name
-;;   :email email
-;;   :password password
-;;   :created-at (date)
-;;   :updated-at (date)}])
-
-
-(m/=> create-user
-      [:=>
-       [:cat uuid? string? string? string?]
-       map?])
+(defn get-user-by-email
+  "Get a User by email"
+  [email db]
+  (jdbc/execute! db (sql/format {:select :*
+                                 :from :users
+                                 :where [:= :email email]})))
